@@ -1,37 +1,34 @@
-NAME =  MyAES.a 
+NAME = MyAES.a
 
 FLAGS = -Wall -Werror -Wextra
 
-CC= cc
+CC = cc
 
-C_SOURCE= cypher_utils.c main.c
+SRC_DIR = .
+OBJ_DIR = objs
 
-H_FILES = MyAES.h 
+C_SOURCE = cypher_utils.c main.c block_converter.c permutation_substitution.c
+H_FILES = MyAES.h
 
-OBJ_SOURCE= $(C_SOURCE:.c=.o)
+OBJ_SOURCE = $(C_SOURCE:%.c=$(OBJ_DIR)/%.o)
 
-.c.o:
-	$(CC) $(FLAGS) -c $< -o $(<:.c=.o)
+$(OBJ_DIR)/%.o: %.c $(H_FILES)
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(FLAGS) -c $< -o $@
 
 all: $(NAME)
 
 $(NAME): $(OBJ_SOURCE)
-	ar -src $(NAME) $(OBJ_SOURCE)
-	$(CC) $(FLAGS) main.c MyAES.a -o MyAES 
+	ar -rcs $(NAME) $(OBJ_SOURCE)
+	$(CC) $(FLAGS) main.c $(NAME) -o MyAES
 
-$(OBJ_SOURCE): $(C_SOURCE)
-	$(CC) $(FLAGS) -c $(C_SOURCE)
- 
-re: $(NAME) $(OBJ_SOURCE)
-	make fclean
-	make all
+re: fclean all
 
 clean:
-	rm -rf $(OBJ_SOURCE)
+	rm -rf $(OBJ_DIR)
 
-fclean:
-	rm -rf $(NAME)
-	rm -rf $(OBJ_SOURCE)
-	rm philosophers
+fclean: clean
+	rm -f $(NAME)
+	rm -f MyAES
 
 .PHONY: all clean fclean re

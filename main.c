@@ -1,58 +1,41 @@
 #include "MyAES.h"
 
-
-void convert_to_32_bits()
+static void cypher_round(uint32_t *matrix, uint32_t key, int len)
 {
-    
-}
-uint32_t **convert_to_block(char *str)
-{
-    int  len;
     int     i;
-    int     j;
-    int     matrix_i;
-    char    **matrix;
 
-    i = 0;
-    j = 0;
-    matrix_i = 0;
-    matrix = NULL;
-    len = (strlen(str) + 3) / 4;
-    printf("%d\n", len);
-    matrix = malloc(sizeof(char *) * (len + 1));
-    matrix[len] = NULL;
-    matrix[j] = calloc(sizeof(char), 5);
-    while (str[i])
-    {
-        if(matrix_i < 4)
-            matrix[j][matrix_i++] = str[i++];
-        else
-        {
-            matrix_i = 0;
-            j++;
-            matrix[j] = calloc(sizeof(char), 5);
-        } 
-    }
-    if(matrix_i > 0 )
-    {
-        while (matrix_i < 4)
-            matrix[j][matrix_i++] = '~';        
-    }
-    j = 0;
-    while (matrix[j] != NULL)
-    {
-        printf("%s\n", matrix[j]);
-        j++;
-    }
-    return(matrix);
+    for(i = 0; matrix[i] != 0; i++)
+        matrix[i] = matrix[i] ^ key;
+    printf("aqui estão as novas chaves depois do XOR:\n");
+    for (i = 0; matrix[i] != 0; i++)
+        print_binary(matrix[i]);
+    for (i = 0; matrix[i] != 0; i++)
+        printf("aqui está os valores dos bits em hexa: %x e em decimal %d\n ", matrix[i], matrix[i]);
+    sbox(matrix, len);
+    printf("aqui estão os novos bits depois do sbox:\n");
+    for (i = 0; matrix[i] != 0; i++)
+        print_binary(matrix[i]);
 }
 
 int main(int argc, char *argv[])
 {
-    char **matrix;
-    (void) argc;
+    uint32_t *matrix;
+    uint32_t key;
+    int       i;
+    int         len;
 
+    if (argc < 3)
+    {
+        printf("valor incorreto de parametros!\n");
+        return (0);
+    }
+    len = (strlen(argv[1]) + 3) / 4;
     matrix = convert_to_block(argv[1]);
-    (void) matrix;
+    for (i = 0; matrix[i] != 0; i++)
+        print_binary(matrix[i]);
+    key = build_block_key(argv[2]);
+    printf("aqui está a key:\n");
+    print_binary(key);
+    cypher_round(matrix, key, len);
     return (0);
 }
