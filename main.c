@@ -11,8 +11,12 @@ static void cypher_round(uint32_t *matrix, uint32_t key, int len)
         print_binary(matrix[i]);
     for (i = 0; matrix[i] != 0; i++)
         printf("aqui está os valores dos bits em hexa: %x e em decimal %d\n ", matrix[i], matrix[i]);
-    sbox(matrix, len);
+    sbox(matrix, len, key);
     printf("aqui estão os novos bits depois do sbox:\n");
+    for (i = 0; matrix[i] != 0; i++)
+        print_binary(matrix[i]);
+    permutacao(matrix, len, key);
+    printf("aqui estão os novos bits depois da permutação:\n");
     for (i = 0; matrix[i] != 0; i++)
         print_binary(matrix[i]);
 }

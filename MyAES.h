@@ -13,6 +13,7 @@ uint32_t    *convert_to_32_bits(char **matrix, int len);
 void        print_binary(uint32_t num);
 uint32_t    build_block(char *bloco_de_4);
 uint32_t    build_block_key(char *str);
-void        sbox(uint32_t *matrix, int len);
+void        permutacao(uint32_t *matrix, int len, uint32_t key);
+void        sbox(uint32_t *matrix, int len, uint32_t key);
 
 #endif
