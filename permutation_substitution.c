@@ -33,7 +33,17 @@ static void gerar_permutacao_dinamica(int pares[4][2], uint32_t chave)
     }
 }
 
-void    sbox(uint32_t *matrix, int len, uint32_t key)
+static void gerar_sbox_inversa(uint8_t *sbox_inv, uint32_t chave)
+{
+    uint8_t sbox[16];
+    gerar_sbox_dinamica(sbox, chave);  // Usa a mesma lógica de criptografia
+
+    for (int i = 0; i < 16; i++)
+        sbox_inv[sbox[i]] = i;
+}
+
+
+void    sbox(uint32_t *matrix, int len, uint32_t key, t_mode mode)
 {
     int i;
     int j;
@@ -41,8 +51,10 @@ void    sbox(uint32_t *matrix, int len, uint32_t key)
 
     j = 0;
     uint8_t sbox4[16];
-    gerar_sbox_dinamica(sbox4, key);
-
+    if(mode == 0)
+        gerar_sbox_dinamica(sbox4, key);
+    else
+        gerar_sbox_inversa(sbox4, key);
     while (j < len)
     {
         bloco = matrix[j];

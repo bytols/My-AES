@@ -7,7 +7,7 @@ CC = cc
 SRC_DIR = .
 OBJ_DIR = objs
 
-C_SOURCE = cypher_utils.c main.c block_converter.c permutation_substitution.c
+C_SOURCE = cypher_utils.c main.c block_converter.c permutation_substitution.c key_derive.c hex_to_bytes.c
 H_FILES = MyAES.h
 
 OBJ_SOURCE = $(C_SOURCE:%.c=$(OBJ_DIR)/%.o)
