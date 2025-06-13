@@ -36,7 +36,6 @@ uint32_t *convert_to_block(char *str)
     matrix_i = 0;
     matrix = NULL;
     len = (strlen(str) + 3) / 4;
-    printf("%d\n", len);
     matrix = malloc(sizeof(char *) * (len + 1));  // malloc o tamanho da lista
     matrix[len] = NULL;
     matrix[j] = calloc(5, sizeof(char)); // calloco a string

@@ -10,8 +10,6 @@
 # include <fcntl.h>
 # include <ctype.h>
 
-
-
 typedef enum e_mode{
     CRYPT,
     DECRYPT,
@@ -31,7 +29,5 @@ int hex_char_to_int(char c);
 uint8_t* hex_string_to_bytes(const char* hex_str, size_t* out_len);
 uint32_t *bytes_to_uint32_array(uint8_t* bytes, size_t byte_len, size_t *out_len);
 void back_to_string_ascii(uint32_t *matrix, size_t len_blocks);
-
-
 
 #endif

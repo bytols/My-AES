@@ -12,8 +12,6 @@ static void cypher_round(uint32_t *matrix, uint32_t key, int len)
         // realizo um xor com chave e os blocos de 32bits
         for(i = 0; i < len; i++)
             matrix[i] ^= key;
-        printf("aqui está a key depois do xor\n");
-        print_binary(key);
         // realizo  a substiuição!
         sbox(matrix, len, key, CRYPT);
         // realizo a permutação
@@ -61,11 +59,7 @@ static void cypher_decrypt(char *conteudo, uint32_t key, int len)
         sbox(matrix, len_blocks, key, DECRYPT);
         for (i = 0; i < (int)len_blocks; i++)
             matrix[i] ^= key;
-        printf("aqui está a key depois do xor\n");
-        print_binary(key);
     }
-    //for (i = 0; i < len; i++)
-    //    print_binary(matrix[i]);
     back_to_string_ascii(matrix, len_blocks);
 
     free(bytes);
@@ -79,17 +73,14 @@ int main()
     uint32_t *matrix;
     uint32_t key;
     char     filename[1024];
-    int      i;
     int      len;
     char     char_key[1024];
 
     // etapa de recebemento dos dados, escolho se vai ser criptograifa ou decripto, passo o nome do arquivo e a chave em formato char *
     printf("digite o nome do arquivo!\n");
     scanf("%s", filename);
-    printf("aqui está o nome escrito %s\n", filename);
     printf("digite a chave!\n");
     scanf("%s", char_key);
-    printf("aqui está a chave escrito %s|\n", char_key);
     FILE *fp = fopen(filename, "r"); // abrindo o arquivo
     if (!fp) { // tratativa de erro ao abrir o arquivo
         perror("Erro ao abrir arquivo");
@@ -118,8 +109,6 @@ int main()
     len = (strlen(conteudo) + 3) / 4; // pego o len da quantidade de blocos de 32 bits necessários para conter o texto
 
     matrix = convert_to_block(conteudo); // crio a matrix de blocos de 32 bits 
-    for (i = 0; matrix[i] != 0; i++)
-        print_binary(matrix[i]);
     // check se a chave tem o tamanho adqueado
     if(strlen(char_key) > 4)
     {
@@ -127,8 +116,6 @@ int main()
         return (0);
     }
     key = build_block_key(char_key); // converto a chave para uint32
-    printf("aqui está a key:\n");
-    print_binary(key);
     int choice = 0;
     printf("escolha o modo: \n 1 - Criptografar \n 2 - Decriptografar \n");
     scanf("%d", &choice); //captura a escolha!
