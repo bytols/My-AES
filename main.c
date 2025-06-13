@@ -1,5 +1,7 @@
 #include "MyAES.h"
 
+
+// esse é o algoritimo que roda as rodas de criptografia
 static void cypher_round(uint32_t *matrix, uint32_t key, int len)
 {
     int     i;
@@ -7,14 +9,19 @@ static void cypher_round(uint32_t *matrix, uint32_t key, int len)
 
     for (round = 0; round < 3; round++)
     {
+        // realizo um xor com chave e os blocos de 32bits
         for(i = 0; i < len; i++)
             matrix[i] ^= key;
         printf("aqui está a key depois do xor\n");
         print_binary(key);
+        // realizo  a substiuição!
         sbox(matrix, len, key, CRYPT);
+        // realizo a permutação
         permutacao(matrix, len, key);
+        // derivo a key
         key = derive_key(key, round + 1);
     }
+    // back to string
     back_to_string(matrix, len);
 }
 
@@ -59,7 +66,6 @@ static void cypher_decrypt(char *conteudo, uint32_t key, int len)
     }
     //for (i = 0; i < len; i++)
     //    print_binary(matrix[i]);
-    back_to_string(matrix, len_blocks);
     back_to_string_ascii(matrix, len_blocks);
 
     free(bytes);
@@ -77,58 +83,66 @@ int main()
     int      len;
     char     char_key[1024];
 
+    // etapa de recebemento dos dados, escolho se vai ser criptograifa ou decripto, passo o nome do arquivo e a chave em formato char *
     printf("digite o nome do arquivo!\n");
     scanf("%s", filename);
     printf("aqui está o nome escrito %s\n", filename);
     printf("digite a chave!\n");
     scanf("%s", char_key);
     printf("aqui está a chave escrito %s|\n", char_key);
-    FILE *fp = fopen(filename, "r");
-    if (!fp) {
+    FILE *fp = fopen(filename, "r"); // abrindo o arquivo
+    if (!fp) { // tratativa de erro ao abrir o arquivo
         perror("Erro ao abrir arquivo");
         return 1;
     }
 
+    // levo o cursor até o fim do arquivo e contanto quantoas bytes ele tem, para conseguir o len
     fseek(fp, 0, SEEK_END);
     long filesize = ftell(fp);
     rewind(fp);
 
+    // malloco o tamanho necessário para receber o conteudo do arquivo.
     char *conteudo = malloc(filesize + 1);
+    // tratativa de erro do malloc;
     if (!conteudo) {
         perror("Erro ao alocar memória");
         fclose(fp);
         return 1;
     }
 
+    // leio o arquivo e preencho no bufer conteudo
     fread(conteudo, 1, filesize, fp);
     conteudo[filesize] = '\0';
-    fclose(fp);
+    fclose(fp); // fecho o arquivo
 
-    printf("\nConteúdo do arquivo:\n%s\n", conteudo);
+    len = (strlen(conteudo) + 3) / 4; // pego o len da quantidade de blocos de 32 bits necessários para conter o texto
 
-    len = (strlen(conteudo) + 3) / 4;
-    matrix = convert_to_block(conteudo);
+    matrix = convert_to_block(conteudo); // crio a matrix de blocos de 32 bits 
     for (i = 0; matrix[i] != 0; i++)
         print_binary(matrix[i]);
-    key = build_block_key(char_key); // verify if its higher than 32 bits
+    // check se a chave tem o tamanho adqueado
+    if(strlen(char_key) > 4)
+    {
+        printf("chave com mais de 32 bits\n");
+        return (0);
+    }
+    key = build_block_key(char_key); // converto a chave para uint32
     printf("aqui está a key:\n");
     print_binary(key);
     int choice = 0;
     printf("escolha o modo: \n 1 - Criptografar \n 2 - Decriptografar \n");
-    scanf("%d", &choice);
-    switch (choice)
+    scanf("%d", &choice); //captura a escolha!
+    switch (choice) // switch para decidir entre crypt ou decrypt
     {
     case 1:
-        cypher_round(matrix, key, len);
+        cypher_round(matrix, key, len); // invoca a sequencia de criptografia
         break;
     case 2:
-        cypher_decrypt(conteudo, key, len);
+        cypher_decrypt(conteudo, key, len); // invoca a sequencia de decriptografia
         break;
     default:
         printf("escolha invalida\n");
-        return 0; // check for leaks
     }
-
     free(conteudo);
     return (0);
 }
